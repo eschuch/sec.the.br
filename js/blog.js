@@ -64,28 +64,42 @@ async function carregarPost(indice) {
 async function montarBlog() {
   await carregarReadme();
   await carregarLista();
+
   const postListDiv = document.getElementById('post-list');
 
-listaPosts.forEach((post, index) => {
-  const link = document.createElement('a');
-  link.href = '#';
-  link.className = 'post-link';
-  link.innerHTML = `
-    <div style="margin-bottom: 0.5rem;">
-      <div>${post.titulo}</div>
-      <div style="font-size: 0.5em; color: #888;">${post.data}</div>
-    </div>`;
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    carregarPost(index);
+  listaPosts.forEach((post, index) => {
+    const slug = post.arquivo.replace('.md', '');
+    const link = document.createElement('a');
+    link.href = `#${slug}`;
+    link.className = 'post-link';
+    link.innerHTML = `
+      <div style="margin-bottom: 1rem; line-height: 1.2;">
+        <div style="font-size: 1em; color: #222;">${post.titulo}</div>
+        <div style="font-size: 0.75em; color: #888;">${post.data}</div>
+      </div>`;
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.hash = `#${slug}`;
+      carregarPost(index);
+    });
+    postListDiv.appendChild(link);
   });
-  postListDiv.appendChild(link);
-});
 
-  // Carrega o primeiro post por padrão
-  if (listaPosts.length > 0) {
-    carregarPost(0);
+  // Carregar post do hash da URL
+  function carregarDoHash() {
+    const slug = window.location.hash.replace('#', '');
+    const index = listaPosts.findIndex(p => p.arquivo === `${slug}.md`);
+    if (index >= 0) {
+      carregarPost(index);
+    } else if (listaPosts.length > 0) {
+      carregarPost(0); // fallback
+    }
   }
+
+  window.addEventListener('hashchange', carregarDoHash);
+  carregarDoHash(); // executa na carga inicial
 }
+
+
 
 montarBlog();
