@@ -1,6 +1,17 @@
 let listaPosts = [];
 let indiceAtual = 0;
 
+async function carregarReadme() {
+  try {
+    const resp = await fetch('README.md');
+    const md = await resp.text();
+    const html = marked.parse(md);
+    document.getElementById('readme-container').innerHTML = html;
+  } catch (error) {
+    console.error('Erro ao carregar README.md:', error);
+  }
+}
+
 async function carregarLista() {
   const resp = await fetch('lista.txt');
   const txt = await resp.text();
@@ -14,7 +25,11 @@ async function carregarPost(indice) {
   const { arquivo, titulo } = listaPosts[indice];
   const resp = await fetch(`posts/${arquivo}`);
   const md = await resp.text();
-  const html = marked.parse(md);
+
+  // Remove a primeira linha se for um título (começa com '# ')
+  const mdSemTitulo = md.replace(/^# .*\n/, '');
+
+  const html = marked.parse(mdSemTitulo);
   const contentDiv = document.getElementById('content');
 
   // Atualiza o conteúdo do post
@@ -47,6 +62,7 @@ async function carregarPost(indice) {
 }
 
 async function montarBlog() {
+  await carregarReadme();
   await carregarLista();
   const postListDiv = document.getElementById('post-list');
 
