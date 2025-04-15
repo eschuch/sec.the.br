@@ -28,4 +28,4 @@ for arquivo in "$PASTA_POSTS"/*.md; do
   echo "${nome_arquivo}|${titulo}|${data}" >> "$ARQUIVO_LISTA"
 done
 
-echo "Arquivo '$ARQUIVO_LISTA' atualizado com sucesso."
+git add lista.txt

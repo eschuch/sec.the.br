@@ -1,3 +1,4 @@
 2024-devsecops-dicas.md|HTOP|2025-04-14
 2024-primeira-ferramenta.md|Apenas um teste de post|2025-04-14
 2025-blog-statico.md|🛠️ Construindo um Blog Estático com GitHub Pages, JavaScript e Markdown|2025-04-14
+2025-pyton.md|💻 Exemplo de Código com Highlight.js|2025-04-14
