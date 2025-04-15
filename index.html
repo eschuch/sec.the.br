@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog - sec.the.br</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js/lib/common.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/github.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    #sidebar {
+      width: 250px;
+      background: #f4f4f4;
+      border-right: 1px solid #ccc;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    #content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .post-link {
+      cursor: pointer;
+      display: block;
+      margin-bottom: 0.8rem;
+      color: #0066cc;
+    }
+    .post-link:hover {
+      text-decoration: underline;
+    }
+    pre code {
+      background: #f0f0f0;
+      padding: 1em;
+      display: block;
+      border-radius: 4px;
+    }
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <h3>📰 Posts</h3>
+    <div id="post-list"></div>
+  </div>
+  <div id="content">
+    <h1>sec.the.br</h1>
+    <p>Selecione um post na barra lateral para visualizar.</p>
+  </div>
+
+  <script src="js/blog.js"></script>
+</body>
+</html>
+
