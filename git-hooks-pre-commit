@@ -3,12 +3,11 @@
 # Caminho absoluto para a pasta onde o script está
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Caminhos baseados na raiz do projeto
 PASTA_POSTS="$DIR/posts"
 ARQUIVO_LISTA="$DIR/lista.txt"
+TMP_LISTA="$DIR/.tmp_lista"
 
-# Limpa o lista.txt
-> "$ARQUIVO_LISTA"
+> "$TMP_LISTA"
 
 # Itera sobre os arquivos .md da pasta de posts
 for arquivo in "$PASTA_POSTS"/*.md; do
@@ -19,19 +18,21 @@ for arquivo in "$PASTA_POSTS"/*.md; do
     titulo="$nome_arquivo"
   fi
 
-  # Verifica a última linha
   ultima_linha=$(tail -n 1 "$arquivo")
   data=$(echo "$ultima_linha" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
 
-  # Se a última linha NÃO contém uma data válida, adiciona a data do arquivo ao final
   if [ -z "$data" ]; then
     data=$(date -r "$arquivo" '+%Y-%m-%d')
-    echo "" >> "$arquivo"      # quebra de linha (caso o anterior não tenha)
-    echo "$data" >> "$arquivo" # insere data no final do arquivo
+    echo "" >> "$arquivo"
+    echo "$data" >> "$arquivo"
   fi
 
-  # Escreve no lista.txt
-  echo "${nome_arquivo}|${titulo}|${data}" >> "$ARQUIVO_LISTA"
+  echo "${data}|${nome_arquivo}|${titulo}" >> "$TMP_LISTA"
 done
+
+# Ordena por data decrescente e salva como lista.txt no formato original
+sort -r "$TMP_LISTA" | awk -F'|' '{print $2 "|" $3 "|" $1}' > "$ARQUIVO_LISTA"
+
+rm -f "$TMP_LISTA"
 
 git add "$ARQUIVO_LISTA" "$PASTA_POSTS"/*.md
