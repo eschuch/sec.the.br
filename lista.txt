@@ -1,2 +1,2 @@
-2024-devsecops-dicas.md|Dicas DevSecOps|2024-04-12
-2024-primeira-ferramenta.md|Primeira Ferramenta|2024-04-10
+2024-devsecops-dicas.md|# TESTE|2025-04-14
+2024-primeira-ferramenta.md|# TESTE|2025-04-14
