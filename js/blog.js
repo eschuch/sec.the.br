@@ -27,7 +27,7 @@ async function carregarPost(indice) {
   const md = await resp.text();
 
   // Remove a primeira linha se for um título (começa com '# ')
-  // const mdSemTitulo = md.replace(/^# .*\n/, '');
+  const mdSemTitulo = md.replace(/^# .*\n/, '');
 
   const html = marked.parse(mdSemTitulo);
   const contentDiv = document.getElementById('content');
@@ -38,7 +38,7 @@ async function carregarPost(indice) {
       <button id="prev-post" ${indice === 0 ? 'disabled' : ''}>&lt; Anterior</button>
       <button id="next-post" ${indice === listaPosts.length - 1 ? 'disabled' : ''}>Próximo &gt;</button>
     </div>
-    <!-- <h2>${titulo}</h2> -->
+    <h2>${titulo}</h2>
     <div>${html}</div>
   `;
 
