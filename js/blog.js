@@ -66,17 +66,21 @@ async function montarBlog() {
   await carregarLista();
   const postListDiv = document.getElementById('post-list');
 
-  listaPosts.forEach((post, index) => {
-    const link = document.createElement('a');
-    link.textContent = post.titulo;
-    link.className = 'post-link';
-    link.href = '#';
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      carregarPost(index);
-    });
-    postListDiv.appendChild(link);
+listaPosts.forEach((post, index) => {
+  const link = document.createElement('a');
+  link.href = '#';
+  link.className = 'post-link';
+  link.innerHTML = `
+    <div style="margin-bottom: 0.5rem;">
+      <div>${post.titulo}</div>
+      <div style="font-size: 0.5em; color: #888;">${post.data}</div>
+    </div>`;
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    carregarPost(index);
   });
+  postListDiv.appendChild(link);
+});
 
   // Carrega o primeiro post por padrão
   if (listaPosts.length > 0) {

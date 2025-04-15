@@ -1,31 +1,37 @@
 #!/bin/bash
 
-# Caminho para a pasta de posts
-PASTA_POSTS="posts"
-# Arquivo de saída
-ARQUIVO_LISTA="lista.txt"
+# Caminho absoluto para a pasta onde o script está
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Limpa o arquivo de saída
+# Caminhos baseados na raiz do projeto
+PASTA_POSTS="$DIR/posts"
+ARQUIVO_LISTA="$DIR/lista.txt"
+
+# Limpa o lista.txt
 > "$ARQUIVO_LISTA"
 
-# Itera sobre os arquivos .md na pasta de posts
+# Itera sobre os arquivos .md da pasta de posts
 for arquivo in "$PASTA_POSTS"/*.md; do
-  # Extrai o nome do arquivo
   nome_arquivo=$(basename "$arquivo")
-  
-  # Extrai o título do post (primeira linha que começa com '#')
   titulo=$(grep -m 1 '^#' "$arquivo" | sed 's/^#\s*//')
-  
-  # Se não encontrar um título, usa o nome do arquivo como título
+
   if [ -z "$titulo" ]; then
     titulo="$nome_arquivo"
   fi
-  
-  # Obtém a data de modificação do arquivo no formato YYYY-MM-DD
-  data=$(date -r "$arquivo" '+%Y-%m-%d')
-  
-  # Escreve a linha no arquivo de saída
+
+  # Verifica a última linha
+  ultima_linha=$(tail -n 1 "$arquivo")
+  data=$(echo "$ultima_linha" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+
+  # Se a última linha NÃO contém uma data válida, adiciona a data do arquivo ao final
+  if [ -z "$data" ]; then
+    data=$(date -r "$arquivo" '+%Y-%m-%d')
+    echo "" >> "$arquivo"      # quebra de linha (caso o anterior não tenha)
+    echo "$data" >> "$arquivo" # insere data no final do arquivo
+  fi
+
+  # Escreve no lista.txt
   echo "${nome_arquivo}|${titulo}|${data}" >> "$ARQUIVO_LISTA"
 done
 
-git add lista.txt
+git add "$ARQUIVO_LISTA" "$PASTA_POSTS"/*.md

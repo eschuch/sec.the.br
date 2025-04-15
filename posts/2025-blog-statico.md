@@ -70,3 +70,5 @@ Certifique-se de que o caminho para a imagem esteja correto em relação à loca
 ---
 
 Este projeto demonstra como é possível criar um blog funcional e esteticamente agradável utilizando apenas tecnologias web básicas. A simplicidade da abordagem facilita a manutenção e a personalização conforme suas necessidades.
+
+2025-04-14
