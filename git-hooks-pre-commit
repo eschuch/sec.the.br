@@ -13,11 +13,11 @@ ARQUIVO_LISTA="$DIR/lista.txt"
 # Itera sobre os arquivos .md da pasta de posts
 for arquivo in "$PASTA_POSTS"/*.md; do
   nome_arquivo=$(basename "$arquivo")
-  titulo=$(grep -m 1 '^#' "$arquivo" | sed 's/^#\s*//')
+#  titulo=$(grep -m 1 '^#' "$arquivo" | sed 's/^#\s*//')
 
-  if [ -z "$titulo" ]; then
+ # if [ -z "$titulo" ]; then
     titulo="$nome_arquivo"
-  fi
+ # fi
 
   # Verifica a última linha
   ultima_linha=$(tail -n 1 "$arquivo")
