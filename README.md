@@ -1,2 +1,0 @@
-# sec.the.br
-
