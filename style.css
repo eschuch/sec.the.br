@@ -18,15 +18,17 @@
     border-bottom-right-radius: 12px;
   }
 
-  #content {
-    flex: 1;
-    padding: 2rem;
-    overflow-y: auto;
-    background: #f5f7fa;
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
-    box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.02);
-  }
+#content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: #eef3fc;           /* mesmo fundo da .post-link */
+  border-radius: 8px;                  /* mesmo arredondamento */
+  box-shadow: none;                    /* sem sombra intensa */
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #333;
+  border: 1px solid #dce3f0;
+}
 
   .post-link {
     cursor: pointer;
@@ -75,27 +77,6 @@
     margin-bottom: 0.5rem;
   }
 
-#readme-container {
-  background-color: #eef3fc;         /* mesmo fundo das .post-link */
-  color: #1a73e8;                    /* mesmo texto das .post-link */
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: 8px;                /* mesmo arredondamento */
-  box-shadow: none;                  /* sem sombra, como as .post-link */
-  font-size: 0.7rem;
-  line-height: 1;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-}
-
-#readme-container a {
-  color: #1a73e8;
-  text-decoration: none;
-}
-
-#readme-container a:hover {
-  text-decoration: none;
-}
-
 #nav-arrows {
   display: flex;
   justify-content: space-between;
@@ -125,4 +106,58 @@
   color: #999;
   cursor: not-allowed;
   box-shadow: none;
+}
+#readme-container {
+  background-color: #eef3fc;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-y: auto;
+  max-height: 40vh;
+  color: #333; /* força texto padrão escuro */
+}
+
+/* Estilo dos títulos */
+#readme-container h1,
+#readme-container h2,
+#readme-container h3 {
+  color: #222 !important;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+/* Tamanhos diferentes para hierarquia */
+#readme-container h1 {
+  font-size: 1.5rem;
+}
+
+#readme-container h2 {
+  font-size: 1.3rem;
+}
+
+#readme-container h3 {
+  font-size: 1.1rem;
+}
+
+/* Links normais */
+#readme-container a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+#readme-container a:hover {
+  text-decoration: underline;
+}
+
+/* Links DENTRO DE TÍTULOS – forçam ser pretos e sem underline */
+#readme-container h1 a,
+#readme-container h2 a,
+#readme-container h3 a {
+  color: #222 !important;
+  text-decoration: none !important;
+  pointer-events: none; /* evita hover/click se quiser comportamento só visual */
+  cursor: default;
 }
