@@ -7,16 +7,15 @@
     color: #333;
   }
 
-  #sidebar {
-    width: 280px;
-    background: #ffffff;
-    border-right: 1px solid #e0e0e0;
-    padding: 1.5rem;
-    overflow-y: auto;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-  }
+#sidebar {
+  width: 280px;
+  background: #ffffff;
+  padding: 1.5rem;
+  margin: 20px;
+  overflow-y: auto;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
 
 #content {
   flex: 1;
