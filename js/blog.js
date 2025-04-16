@@ -45,6 +45,9 @@ async function carregarPost(indice) {
   // Atualiza o índice atual
   indiceAtual = indice;
 
+  // Atualiza o hash da URL (ex: #python, #htop)
+  window.location.hash = arquivo.replace('.md', '');
+
   // Adiciona eventos aos botões
   document.getElementById('prev-post').addEventListener('click', () => {
     if (indiceAtual > 0) {
@@ -60,6 +63,7 @@ async function carregarPost(indice) {
 
   hljs.highlightAll();
 }
+
 
 async function montarBlog() {
   await carregarReadme();
