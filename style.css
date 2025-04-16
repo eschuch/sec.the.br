@@ -21,7 +21,7 @@
 #content {
   flex: 1;
   padding: 2rem;
-  margin: 20px auto 20px auto;
+  margin: 20px 20px 20px 20px;
   overflow-y: auto;
   background-color: #eef3fc;
   border-radius: 8px;
