@@ -34,7 +34,7 @@ async function carregarPost(indice) {
 
   // Atualiza o conteúdo do post
   contentDiv.innerHTML = `
-    <div id="nav-arrows" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+    <div id="nav-arrows">
       <button id="prev-post" ${indice === 0 ? 'disabled' : ''}>&lt; Anterior</button>
       <button id="next-post" ${indice === listaPosts.length - 1 ? 'disabled' : ''}>Próximo &gt;</button>
     </div>
