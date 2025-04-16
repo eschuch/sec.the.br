@@ -77,23 +77,23 @@
 
 #readme-container {
   background-color: #eef3fc;         /* mesmo fundo das .post-link */
-  color: #1a73e8;                    /* mesmo texto das .post-link */
+  color: #f8f8f2;                    /* mesmo texto das .post-link */
   padding: 1rem;
   margin-bottom: 1.5rem;
   border-radius: 8px;                /* mesmo arredondamento */
   box-shadow: none;                  /* sem sombra, como as .post-link */
-  font-size: 0.9rem;
-  line-height: 1.4;
+  font-size: 0.7rem;
+  line-height: 1;
   font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
 #readme-container a {
-  color: #1a73e8;
+  color: #f8f8f2;
   text-decoration: none;
 }
 
 #readme-container a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 
