@@ -77,7 +77,7 @@
 
 #readme-container {
   background-color: #eef3fc;         /* mesmo fundo das .post-link */
-  color: #f8f8f2;                    /* mesmo texto das .post-link */
+  color: #1a73e8;                    /* mesmo texto das .post-link */
   padding: 1rem;
   margin-bottom: 1.5rem;
   border-radius: 8px;                /* mesmo arredondamento */
@@ -88,7 +88,7 @@
 }
 
 #readme-container a {
-  color: #f8f8f2;
+  color: #1a73e8;
   text-decoration: none;
 }
 
