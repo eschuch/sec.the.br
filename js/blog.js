@@ -110,4 +110,42 @@ async function montarBlog() {
   carregarDoHash();
 }
 
+
+function configurarSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('toggle-sidebar');
+
+  function atualizarBotao() {
+    const oculto = sidebar.classList.contains('hidden');
+    toggleBtn.innerHTML = oculto ? '&raquo;' : '&laquo;';
+    toggleBtn.title = oculto ? 'Mostrar menu' : 'Esconder menu';
+  }
+
+  function atualizarSidebarPorLargura() {
+    if (window.innerWidth >= 600) {
+      // Em telas grandes, sempre mostrar a sidebar
+      sidebar.classList.remove('hidden');
+    }
+    // Em telas pequenas, respeita o clique do usuário (não força ocultar)
+    atualizarBotao();
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    atualizarBotao();
+  });
+
+  // Inicializa corretamente
+  if (window.innerWidth < 600) {
+    sidebar.classList.add('hidden');
+  }
+
+  atualizarBotao();
+
+  // Ajusta conforme redimensionamento
+  window.addEventListener('resize', atualizarSidebarPorLargura);
+}
+
+
 montarBlog();
+document.addEventListener('DOMContentLoaded', configurarSidebar);
