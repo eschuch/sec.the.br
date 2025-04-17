@@ -12,27 +12,43 @@ async function carregarReadme() {
   }
 }
 
-async function carregarLista() {
-  const resp = await fetch('lista.txt');
-  const txt = await resp.text();
-  listaPosts = txt.trim().split('\n').map(linha => {
-    const [arquivo, titulo, data] = linha.split('|');
-    return { arquivo, titulo, data };
-  });
+async function carregarListaDinamica() {
+  let index = 1;
+
+  while (true) {
+    const resp = await fetch(`posts/${index}.md`);
+    if (!resp.ok) break; // se o arquivo não existir, para tudo
+
+    const md = await resp.text();
+    const linhas = md.trim().split('\n');
+
+    if (
+      linhas.length >= 6 &&
+      linhas[2].startsWith('# ') &&
+      linhas[3].startsWith('## ') &&
+      linhas[4].startsWith('### ') &&
+      linhas[5].startsWith('---')
+    ) {
+      listaPosts.push({
+        arquivo: `${index}.md`,
+        titulo: linhas[2].replace(/^# /, '').trim(),
+        data: linhas[0].trim()
+      });
+    }
+
+    index++; // continua verificando mesmo se o arquivo for inválido
+  }
+
+  listaPosts.reverse();
 }
 
 async function carregarPost(indice) {
   const { arquivo, titulo } = listaPosts[indice];
   const resp = await fetch(`posts/${arquivo}`);
   const md = await resp.text();
+  const html = marked.parse(md);
 
-  // Remove a primeira linha se for um título (começa com '# ')
-  const mdSemTitulo = md.replace(/^# .*\n/, '');
-
-  const html = marked.parse(mdSemTitulo);
   const contentDiv = document.getElementById('content');
-
-  // Atualiza o conteúdo do post
   contentDiv.innerHTML = `
     <div id="nav-arrows">
       <button id="prev-post" ${indice === 0 ? 'disabled' : ''}>&lt; Anterior</button>
@@ -42,32 +58,23 @@ async function carregarPost(indice) {
     <div>${html}</div>
   `;
 
-  // Atualiza o índice atual
   indiceAtual = indice;
-
-  // Atualiza o hash da URL (ex: #python, #htop)
   window.location.hash = arquivo.replace('.md', '');
 
-  // Adiciona eventos aos botões
   document.getElementById('prev-post').addEventListener('click', () => {
-    if (indiceAtual > 0) {
-      carregarPost(indiceAtual - 1);
-    }
+    if (indiceAtual > 0) carregarPost(indiceAtual - 1);
   });
 
   document.getElementById('next-post').addEventListener('click', () => {
-    if (indiceAtual < listaPosts.length - 1) {
-      carregarPost(indiceAtual + 1);
-    }
+    if (indiceAtual < listaPosts.length - 1) carregarPost(indiceAtual + 1);
   });
 
   hljs.highlightAll();
 }
 
-
 async function montarBlog() {
   await carregarReadme();
-  await carregarLista();
+  await carregarListaDinamica();
 
   const postListDiv = document.getElementById('post-list');
 
@@ -89,21 +96,18 @@ async function montarBlog() {
     postListDiv.appendChild(link);
   });
 
-  // Carregar post do hash da URL
   function carregarDoHash() {
     const slug = window.location.hash.replace('#', '');
     const index = listaPosts.findIndex(p => p.arquivo === `${slug}.md`);
     if (index >= 0) {
       carregarPost(index);
     } else if (listaPosts.length > 0) {
-      carregarPost(0); // fallback
+      carregarPost(0);
     }
   }
 
   window.addEventListener('hashchange', carregarDoHash);
-  carregarDoHash(); // executa na carga inicial
+  carregarDoHash();
 }
-
-
 
 montarBlog();
