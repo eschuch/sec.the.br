@@ -54,7 +54,6 @@ async function carregarPost(indice) {
       <button id="prev-post" ${indice === 0 ? 'disabled' : ''}>&lt; Anterior</button>
       <button id="next-post" ${indice === listaPosts.length - 1 ? 'disabled' : ''}>Próximo &gt;</button>
     </div>
-    <h2>${titulo}</h2>
     <div>${html}</div>
   `;
 
