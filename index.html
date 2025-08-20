@@ -11,7 +11,7 @@
         /* * Dracula Color Palette
          * Background: #282a36
          * Current Line: #44475a
-         * Foreground: #f8f82
+         * Foreground: #f8f8f2
          * Comment: #6272a4
          * Cyan: #8be9fd
          * Green: #50fa7b
@@ -66,7 +66,7 @@
             box-shadow: inset 0 0 0 2000px rgba(40, 42, 54, 0.7); /* Dark overlay to make text readable */
         }
         
-        #summary, #skills, #ai-chat {
+        #summary, #skills, #ai-curiosity {
             background-color: #282a36;
         }
 
@@ -156,122 +156,69 @@
             font-size: 1.2em;
         }
 
-        /* Gemini Feature Styles */
-        button.gemini-btn {
-            background-color: #bd93f9; /* Purple */
-            color: #f8f8f2;
-            border: none;
-            padding: 12px 24px;
-            font-family: 'Fira Code', monospace;
-            font-size: 1em;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-        }
-
-        button.gemini-btn:hover {
-            background-color: #ff79c6; /* Pink */
-        }
-        
-        button.gemini-btn:disabled {
-            background-color: #6272a4;
-            cursor: not-allowed;
-        }
-
-        #newSummaryContainer {
-            margin-top: 20px;
-            border-top: 1px solid #44475a;
-            padding-top: 20px;
-            text-align: left;
-        }
-
         .loading-indicator {
             display: none;
             margin-top: 20px;
             color: #f1fa8c; /* Yellow */
         }
-
-        #chat-container {
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        #chat-box {
-            height: 300px;
-            overflow-y: auto;
+        
+        /* New Curiosity Section Styles */
+        #curiosity-container {
+            min-height: 250px; /* Ensure a consistent height */
             border: 1px solid #44475a;
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
             text-align: left;
             background-color: #282a36;
-        }
-        
-        .chat-message {
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-        
-        .user-message {
-            color: #8be9fd; /* Cyan */
-        }
-        
-        .ai-message {
-            color: #f8f8f2; /* Foreground */
-        }
-        
-        .chat-message strong {
-             color: #50fa7b; /* Green */
-        }
-
-        #chat-input-container {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        #chat-input {
-            flex-grow: 1;
-            background-color: #44475a;
-            border: 1px solid #6272a4;
-            border-radius: 8px;
-            padding: 12px;
-            font-family: 'Fira Code', monospace;
-            color: #f8f8f2;
-            font-size: 1em;
+        #curiosity-text {
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        #related-topics-container {
+            border-top: 1px solid #6272a4;
+            padding-top: 15px;
         }
         
-        #chat-input::placeholder {
-            color: #6272a4;
+        #related-topics-container p {
+           margin-bottom: 10px;
+           color: #8be9fd; /* Cyan */
         }
+
+        .related-topic-link {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 15px;
+            background-color: #44475a;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .related-topic-link:hover {
+            background-color: #bd93f9; /* Purple */
+            color: #f8f8f2;
+        }
+        
+        .random-btn {
+            background-color: #ffb86c; /* Orange */
+            color: #282a36;
+        }
+        
+        .random-btn:hover {
+            background-color: #f1fa8c; /* Yellow */
+            color: #282a36;
+        }
+
+
     </style>
 </head>
 <body>
-
-    <!-- =================================================================== -->
-    <!-- ADDITIONAL CONTEXT FOR THE AI (DOES NOT APPEAR ON THE SITE) -->
-    <!-- =================================================================== -->
-    <div id="hidden-ai-context" style="display: none;">
-        <!-- 
-            INSTRUCTIONS:
-            Add any extra information here that you want the chatbot to know about you.
-            This will not be visible on the site, but the AI will use this text to answer questions.
-            You can add details about projects, hobbies, work philosophy,
-            specific achievements, etc. The more details, the richer the answers will be.
-
-            EXAMPLE:
-            My work philosophy is based on automation. I believe that any repetitive task
-            can and should be automated to free up time for innovation.
-            On a project at Dell, I created a TCL script that reduced regression testing time
-            from 2 days to 4 hours. I am a classic car enthusiast and spend
-            my weekends restoring a 1978 Opala.
-        -->
-
-        <!-- START ADDING YOUR TEXT BELOW THIS LINE -->
-        
-    </div>
-    <!-- =================================================================== -->
-
 
     <!-- Hero Section -->
     <section id="hero" class="parallax-section">
@@ -288,12 +235,6 @@
             <div id="originalSummary">
                 <p>With over 30 years of experience in information technology, I specialize in providing IT and infrastructure solutions across various market segments. I focus on Linux and network security, leveraging my expertise in cloud, virtualization, and automation to safeguard client data and systems, ensuring their reliability, availability, and integrity.</p>
                 <p>I also held roles as a product manager, programmer and QA. During my tenure, I contributed to the development and execution of IT and infrastructure projects, meeting the needs of both internal and external stakeholders. Passionate about technology and innovation, I am committed to continuously updating and enhancing my skills within my field.</p>
-            </div>
-            <button id="summarizeBtn" class="gemini-btn">✨ Generate New Summary with AI</button>
-            <div id="loadingSummary" class="loading-indicator">Generating...</div>
-            <div id="newSummaryContainer" style="display:none;">
-                <h3>AI-Generated Summary:</h3>
-                <p id="generatedSummary"></p>
             </div>
         </div>
     </section>
@@ -365,33 +306,22 @@
         </div>
     </section>
     
-    <!-- AI Chat Section -->
-    <section id="ai-chat" class="parallax-section">
+    <!-- AI Curiosity Section -->
+    <section id="ai-curiosity" class="parallax-section">
         <div class="content-wrapper">
-            <h2>✨ Ask the AI</h2>
-            <p style="text-align: center;">Ask a question about my career or skills. The AI will answer based on the information on this page.</p>
-            <div id="chat-container">
-                <div id="chat-box"></div>
-                <div id="chat-input-container">
-                    <input type="text" id="chat-input" placeholder="Ex: 'What is your experience with cybersecurity?'">
-                    <button id="chat-submit" class="gemini-btn">Send</button>
-                </div>
-                 <div id="loadingChat" class="loading-indicator">Thinking...</div>
+            <h2>✨ Curiosity Explorer</h2>
+            <p style="text-align: center;">Discover a new fact and click the topics to explore more with the help of AI.</p>
+            <div id="curiosity-container">
+                <!-- AI-generated content will be injected here -->
             </div>
+            <div id="loadingCuriosity" class="loading-indicator">Exploring the universe for a new fact...</div>
         </div>
     </section>
 
 <script>
     // --- DOM Elements ---
-    const summarizeBtn = document.getElementById('summarizeBtn');
-    const loadingSummary = document.getElementById('loadingSummary');
-    const newSummaryContainer = document.getElementById('newSummaryContainer');
-    const generatedSummary = document.getElementById('generatedSummary');
-
-    const chatInput = document.getElementById('chat-input');
-    const chatSubmitBtn = document.getElementById('chat-submit');
-    const chatBox = document.getElementById('chat-box');
-    const loadingChat = document.getElementById('loadingChat');
+    const curiosityContainer = document.getElementById('curiosity-container');
+    const loadingCuriosity = document.getElementById('loadingCuriosity');
 
     // --- Gemini API Logic ---
     const apiKey = ""; // Leave as is, will be provided at runtime
@@ -399,19 +329,12 @@
 
     /**
      * Calls the Gemini API with error handling and exponential backoff.
-     * @param {string} prompt The prompt to send to the model.
+     * @param {object} payload The full payload to send to the model.
      * @param {number} retries Number of remaining retry attempts.
      * @param {number} delay Delay before the next retry.
      * @returns {Promise<string>} The model's response text.
      */
-    async function callGeminiAPI(prompt, retries = 3, delay = 1000) {
-        const payload = {
-            contents: [{
-                role: "user",
-                parts: [{ text: prompt }]
-            }]
-        };
-
+    async function callGeminiAPI(payload, retries = 3, delay = 1000) {
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -422,7 +345,7 @@
             if (!response.ok) {
                 if (response.status === 429 && retries > 0) { // Throttling
                     await new Promise(resolve => setTimeout(resolve, delay));
-                    return callGeminiAPI(prompt, retries - 1, delay * 2);
+                    return callGeminiAPI(payload, retries - 1, delay * 2);
                 }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -434,101 +357,112 @@
                 result.candidates[0].content.parts.length > 0) {
                 return result.candidates[0].content.parts[0].text;
             } else {
-                return "Could not generate a response. The API response structure was unexpected.";
+                // Handle cases where the response is empty or malformed
+                console.error("Unexpected API response structure:", result);
+                return JSON.stringify({
+                    curiosity: "I couldn't find a curiosity right now. How about trying a different topic?",
+                    related_topics: ["History", "Technology", "Nature"]
+                });
             }
         } catch (error) {
             console.error("Error calling Gemini API:", error);
             if (retries > 0) {
                 await new Promise(resolve => setTimeout(resolve, delay));
-                return callGeminiAPI(prompt, retries - 1, delay * 2);
+                return callGeminiAPI(payload, retries - 1, delay * 2);
             }
-            return "An error occurred while communicating with the AI. Please try again later.";
+            return JSON.stringify({
+                curiosity: "An error occurred while communicating with the knowledge universe. Please try again later.",
+                related_topics: ["Science", "Geography", "Art"]
+            });
         }
     }
     
+    // --- Feature: AI Curiosity Explorer ---
+
     /**
-     * Collects all relevant text from the page to use as context.
-     * @returns {string} The page text content.
+     * Fetches and displays a curiosity from the AI.
+     * @param {string | null} topic The topic for the curiosity. If null, a random one is fetched.
      */
-    function getPageContext() {
-        const summaryText = document.getElementById('originalSummary').innerText;
-        const experienceItems = Array.from(document.querySelectorAll('.job')).map(job => job.innerText.replace(/\n/g, ' ')).join('. ');
-        const skillsItems = Array.from(document.querySelectorAll('.skills-list li')).map(li => li.innerText).join(', ');
-        // Get the text from the new invisible div
-        const hiddenContext = document.getElementById('hidden-ai-context').innerText;
+    async function fetchCuriosity(topic = null) {
+        loadingCuriosity.style.display = 'block';
+        curiosityContainer.innerHTML = ''; // Clear previous content
+
+        const professionalContext = "IT infrastructure, cybersecurity, Linux, network security, virtualization, and cloud computing";
+        const subject = topic || `a surprising and little-known fact about ${professionalContext}`;
+        const prompt = `Generate a fascinating and little-known curiosity about '${subject}'. Your response MUST be a single valid JSON object with two keys: "curiosity" (a string with the fact) and "related_topics" (an array of 3 strings with related subjects for exploration within the professional context of ${professionalContext}). The text must be in American English.`;
+
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+                responseMimeType: "application/json",
+            }
+        };
+
+        const responseText = await callGeminiAPI(payload);
         
-        return `Visible Information on the Site: { Summary: ${summaryText}. Experience: ${experienceItems}. Skills and Certifications: ${skillsItems}. } Additional Information (extra context): { ${hiddenContext} }`;
-    }
-
-    // --- Feature: Generate Summary ---
-    summarizeBtn.addEventListener('click', async () => {
-        summarizeBtn.disabled = true;
-        loadingSummary.style.display = 'block';
-        newSummaryContainer.style.display = 'none';
-
-        const context = getPageContext();
-        const prompt = `Based on the following professional profile, write a new concise and impactful summary in the first person, with a maximum of two paragraphs, in American English. Highlight the main skills and vast experience. Profile: "${context}"`;
-        
-        const newSummary = await callGeminiAPI(prompt);
-        
-        generatedSummary.innerText = newSummary;
-        loadingSummary.style.display = 'none';
-        newSummaryContainer.style.display = 'block';
-        summarizeBtn.disabled = false;
-    });
-
-    // --- Feature: AI Chat ---
-    async function handleChatSubmit() {
-        const userQuestion = chatInput.value.trim();
-        if (!userQuestion) return;
-
-        chatSubmitBtn.disabled = true;
-        chatInput.disabled = true;
-        loadingChat.style.display = 'block';
-
-        // Display the user's message
-        appendMessage(userQuestion, 'user');
-        chatInput.value = '';
-
-        const context = getPageContext();
-        const prompt = `You are an AI assistant representing Erico Schuch. Answer the following question strictly based on the information from his professional profile (both visible and additional). Be friendly and professional. If the answer is not in the profile, say that you do not have that specific information, but you can talk about the skills he has. Answer in American English. Erico's Profile: "${context}". Visitor's question: "${userQuestion}"`;
-
-        const aiResponse = await callGeminiAPI(prompt);
-
-        // Display the AI's response
-        appendMessage(aiResponse, 'ai');
-        
-        loadingChat.style.display = 'none';
-        chatSubmitBtn.disabled = false;
-        chatInput.disabled = false;
-        chatInput.focus();
-    }
-
-    chatSubmitBtn.addEventListener('click', handleChatSubmit);
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handleChatSubmit();
+        try {
+            const data = JSON.parse(responseText);
+            displayCuriosity(data.curiosity, data.related_topics);
+        } catch (error)
+        {
+            console.error("Failed to parse JSON response:", error, "Response was:", responseText);
+            displayCuriosity("There was a small cosmic hiccup while processing the information. How about exploring one of these topics?", ["Historic Hacks", "Kernel Development", "Data Centers"]);
         }
-    });
-    
-    /**
-     * Appends a message to the chat box.
-     * @param {string} text The message text.
-     * @param {'user' | 'ai'} sender Who sent the message.
-     */
-    function appendMessage(text, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('chat-message', sender === 'user' ? 'user-message' : 'ai-message');
-        
-        const senderStrong = document.createElement('strong');
-        senderStrong.innerText = sender === 'user' ? 'You: ' : 'AI: ';
-        
-        messageDiv.appendChild(senderStrong);
-        messageDiv.append(text);
-        
-        chatBox.appendChild(messageDiv);
-        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the latest message
+
+        loadingCuriosity.style.display = 'none';
     }
+
+    /**
+     * Renders the curiosity and related topics in the container.
+     * @param {string} curiosityText The main text of the fact.
+     * @param {string[]} topics An array of related topics.
+     */
+    function displayCuriosity(curiosityText, topics) {
+        curiosityContainer.innerHTML = ''; // Clear for safety
+
+        const textElement = document.createElement('p');
+        textElement.id = 'curiosity-text';
+        textElement.textContent = curiosityText;
+
+        const topicsContainer = document.createElement('div');
+        topicsContainer.id = 'related-topics-container';
+        
+        const topicsHeader = document.createElement('p');
+        topicsHeader.textContent = 'Explore more:';
+        topicsContainer.appendChild(topicsHeader);
+        
+        // Add the Random button first
+        const randomLink = document.createElement('a');
+        randomLink.textContent = 'Random';
+        randomLink.className = 'related-topic-link random-btn';
+        randomLink.href = '#ai-curiosity';
+        randomLink.onclick = (e) => {
+            e.preventDefault();
+            fetchCuriosity(null); // Pass null for a random topic
+        };
+        topicsContainer.appendChild(randomLink);
+
+        // Add the AI-suggested topics
+        topics.forEach(topic => {
+            const link = document.createElement('a');
+            link.textContent = topic;
+            link.className = 'related-topic-link';
+            link.href = '#ai-curiosity';
+            link.onclick = (e) => {
+                e.preventDefault();
+                fetchCuriosity(topic);
+            };
+            topicsContainer.appendChild(link);
+        });
+
+        curiosityContainer.appendChild(textElement);
+        curiosityContainer.appendChild(topicsContainer);
+    }
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchCuriosity();
+    });
 
 </script>
 </body>
