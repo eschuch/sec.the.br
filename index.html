@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,7 +66,7 @@
             box-shadow: inset 0 0 0 2000px rgba(40, 42, 54, 0.7); /* Dark overlay to make text readable */
         }
         
-        #summary, #skills, #ai-curiosity {
+        #summary, #skills {
             background-color: #282a36;
         }
 
@@ -155,66 +155,6 @@
             margin: 10px 0;
             font-size: 1.2em;
         }
-
-        .loading-indicator {
-            display: none;
-            margin-top: 20px;
-            color: #f1fa8c; /* Yellow */
-        }
-        
-        /* New Curiosity Section Styles */
-        #curiosity-container {
-            min-height: 250px; /* Ensure a consistent height */
-            border: 1px solid #44475a;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: left;
-            background-color: #282a36;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        #curiosity-text {
-            margin-bottom: 25px;
-            font-size: 1.1em;
-        }
-
-        #related-topics-container {
-            border-top: 1px solid #6272a4;
-            padding-top: 15px;
-        }
-        
-        #related-topics-container p {
-           margin-bottom: 10px;
-           color: #8be9fd; /* Cyan */
-        }
-
-        .related-topic-link {
-            display: inline-block;
-            margin: 5px;
-            padding: 8px 15px;
-            background-color: #44475a;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .related-topic-link:hover {
-            background-color: #bd93f9; /* Purple */
-            color: #f8f8f2;
-        }
-        
-        .random-btn {
-            background-color: #ffb86c; /* Orange */
-            color: #282a36;
-        }
-        
-        .random-btn:hover {
-            background-color: #f1fa8c; /* Yellow */
-            color: #282a36;
-        }
-
 
     </style>
 </head>
@@ -305,165 +245,6 @@
             </div>
         </div>
     </section>
-    
-    <!-- AI Curiosity Section -->
-    <section id="ai-curiosity" class="parallax-section">
-        <div class="content-wrapper">
-            <h2>✨ Curiosity Explorer</h2>
-            <p style="text-align: center;">Discover a new fact and click the topics to explore more with the help of AI.</p>
-            <div id="curiosity-container">
-                <!-- AI-generated content will be injected here -->
-            </div>
-            <div id="loadingCuriosity" class="loading-indicator">Exploring the universe for a new fact...</div>
-        </div>
-    </section>
 
-<script>
-    // --- DOM Elements ---
-    const curiosityContainer = document.getElementById('curiosity-container');
-    const loadingCuriosity = document.getElementById('loadingCuriosity');
-
-    // --- Gemini API Logic ---
-    const apiKey = ""; // Leave as is, will be provided at runtime
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-    /**
-     * Calls the Gemini API with error handling and exponential backoff.
-     * @param {object} payload The full payload to send to the model.
-     * @param {number} retries Number of remaining retry attempts.
-     * @param {number} delay Delay before the next retry.
-     * @returns {Promise<string>} The model's response text.
-     */
-    async function callGeminiAPI(payload, retries = 3, delay = 1000) {
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                if (response.status === 429 && retries > 0) { // Throttling
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return callGeminiAPI(payload, retries - 1, delay * 2);
-                }
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            
-            if (result.candidates && result.candidates.length > 0 &&
-                result.candidates[0].content && result.candidates[0].content.parts &&
-                result.candidates[0].content.parts.length > 0) {
-                return result.candidates[0].content.parts[0].text;
-            } else {
-                // Handle cases where the response is empty or malformed
-                console.error("Unexpected API response structure:", result);
-                return JSON.stringify({
-                    curiosity: "I couldn't find a curiosity right now. How about trying a different topic?",
-                    related_topics: ["History", "Technology", "Nature"]
-                });
-            }
-        } catch (error) {
-            console.error("Error calling Gemini API:", error);
-            if (retries > 0) {
-                await new Promise(resolve => setTimeout(resolve, delay));
-                return callGeminiAPI(payload, retries - 1, delay * 2);
-            }
-            return JSON.stringify({
-                curiosity: "An error occurred while communicating with the knowledge universe. Please try again later.",
-                related_topics: ["Science", "Geography", "Art"]
-            });
-        }
-    }
-    
-    // --- Feature: AI Curiosity Explorer ---
-
-    /**
-     * Fetches and displays a curiosity from the AI.
-     * @param {string | null} topic The topic for the curiosity. If null, a random one is fetched.
-     */
-    async function fetchCuriosity(topic = null) {
-        loadingCuriosity.style.display = 'block';
-        curiosityContainer.innerHTML = ''; // Clear previous content
-
-        const professionalContext = "IT infrastructure, cybersecurity, Linux, network security, virtualization, and cloud computing";
-        const subject = topic || `a surprising and little-known fact about ${professionalContext}`;
-        const prompt = `Generate a fascinating and little-known curiosity about '${subject}'. Your response MUST be a single valid JSON object with two keys: "curiosity" (a string with the fact) and "related_topics" (an array of 3 strings with related subjects for exploration within the professional context of ${professionalContext}). The text must be in American English.`;
-
-        const payload = {
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-                responseMimeType: "application/json",
-            }
-        };
-
-        const responseText = await callGeminiAPI(payload);
-        
-        try {
-            const data = JSON.parse(responseText);
-            displayCuriosity(data.curiosity, data.related_topics);
-        } catch (error)
-        {
-            console.error("Failed to parse JSON response:", error, "Response was:", responseText);
-            displayCuriosity("There was a small cosmic hiccup while processing the information. How about exploring one of these topics?", ["Historic Hacks", "Kernel Development", "Data Centers"]);
-        }
-
-        loadingCuriosity.style.display = 'none';
-    }
-
-    /**
-     * Renders the curiosity and related topics in the container.
-     * @param {string} curiosityText The main text of the fact.
-     * @param {string[]} topics An array of related topics.
-     */
-    function displayCuriosity(curiosityText, topics) {
-        curiosityContainer.innerHTML = ''; // Clear for safety
-
-        const textElement = document.createElement('p');
-        textElement.id = 'curiosity-text';
-        textElement.textContent = curiosityText;
-
-        const topicsContainer = document.createElement('div');
-        topicsContainer.id = 'related-topics-container';
-        
-        const topicsHeader = document.createElement('p');
-        topicsHeader.textContent = 'Explore more:';
-        topicsContainer.appendChild(topicsHeader);
-        
-        // Add the Random button first
-        const randomLink = document.createElement('a');
-        randomLink.textContent = 'Random';
-        randomLink.className = 'related-topic-link random-btn';
-        randomLink.href = '#ai-curiosity';
-        randomLink.onclick = (e) => {
-            e.preventDefault();
-            fetchCuriosity(null); // Pass null for a random topic
-        };
-        topicsContainer.appendChild(randomLink);
-
-        // Add the AI-suggested topics
-        topics.forEach(topic => {
-            const link = document.createElement('a');
-            link.textContent = topic;
-            link.className = 'related-topic-link';
-            link.href = '#ai-curiosity';
-            link.onclick = (e) => {
-                e.preventDefault();
-                fetchCuriosity(topic);
-            };
-            topicsContainer.appendChild(link);
-        });
-
-        curiosityContainer.appendChild(textElement);
-        curiosityContainer.appendChild(topicsContainer);
-    }
-
-    // Initial load
-    window.addEventListener('DOMContentLoaded', () => {
-        fetchCuriosity();
-    });
-
-</script>
 </body>
 </html>
