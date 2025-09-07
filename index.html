@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en-US">
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
     <meta charset="UTF-8">
@@ -67,7 +67,7 @@
             box-shadow: inset 0 0 0 2000px rgba(40, 42, 54, 0.7); /* Dark overlay to make text readable */
         }
         
-        #summary, #skills {
+        #summary, #skills, #blog {
             background-color: #282a36;
         }
 
@@ -233,19 +233,22 @@
             </ul>
         </div>
     </section>
-<section id="blog" class="parallax-section">
-    <div class="content-wrapper">
-        <h2>Blog</h2>
-        <div id="blog-navigation" style="text-align: center; margin-bottom: 20px;">
-            <a href="javascript:void(0);" id="prev-post" style="margin-right: 20px;">&lt; Previous</a>
-            <span style="color: #f1fa8c;">Post <span id="current-post-number"></span> of <span id="total-posts"></span></span>
-            <a href="javascript:void(0);" id="next-post" style="margin-left: 20px;">Next &gt;</a>
+    
+    <!-- Blog Section -->
+    <section id="blog" class="parallax-section">
+        <div class="content-wrapper">
+            <h2>Blog</h2>
+            <div id="blog-navigation" style="text-align: center; margin-bottom: 20px;">
+                <a href="javascript:void(0);" id="prev-post" style="margin-right: 20px;">&lt; Previous</a>
+                <span style="color: #f1fa8c;">Post <span id="current-post-number"></span> of <span id="total-posts"></span></span>
+                <a href="javascript:void(0);" id="next-post" style="margin-left: 20px;">Next &gt;</a>
+            </div>
+            <div id="post-content" style="text-align: left; background-color: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px;">
+                <p>Loading...</p>
+            </div>
         </div>
-        <div id="post-content" style="text-align: left; background-color: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px;">
-            <p>Loading...</p>
-        </div>
-    </div>
-</section>
+    </section>
+
     <!-- Contact Section -->
     <section id="contact" class="parallax-section">
         <div class="content-wrapper">
@@ -270,17 +273,18 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentPost = 0;
     let latestPost = 0;
 
-    // Função para carregar um post específico
+    // Function to load a specific post
     async function loadPost(postNumber) {
         if (postNumber < 1 || postNumber > latestPost) {
-            postContent.innerHTML = '<p>Post doesn´t exist.</p>';
+            postContent.innerHTML = '<p>Post not found.</p>';
             return;
         }
 
         try {
-            const response = await fetch(`blog/${postNumber}.md`);
+            // FIX: Use a root-relative path by adding a leading slash
+            const response = await fetch(`/blog/${postNumber}.md`);
             if (!response.ok) {
-                throw new Error('Fail to load post.');
+                throw new Error('Failed to load post.');
             }
             const markdown = await response.text();
             const html = converter.makeHtml(markdown);
@@ -290,31 +294,20 @@ document.addEventListener('DOMContentLoaded', function () {
             updateNavigation();
         } catch (error) {
             console.error(error);
-            postContent.innerHTML = `<p>The blog file ${postNumber}.md doesen´t exist.</p>`;
+            postContent.innerHTML = `<p>The file ${postNumber}.md was not found in the /blog/ folder.</p>`;
         }
     }
 
-    // Função para atualizar os botões de navegação
+    // Function to update the navigation buttons
     function updateNavigation() {
         currentPostSpan.textContent = currentPost;
         totalPostsSpan.textContent = latestPost;
 
-        // Botão Anterior
-        if (currentPost <= 1) {
-            prevButton.style.visibility = 'hidden';
-        } else {
-            prevButton.style.visibility = 'visible';
-        }
-
-        // Botão Próximo
-        if (currentPost >= latestPost) {
-            nextButton.style.visibility = 'hidden';
-        } else {
-            nextButton.style.visibility = 'visible';
-        }
+        prevButton.style.visibility = (currentPost <= 1) ? 'hidden' : 'visible';
+        nextButton.style.visibility = (currentPost >= latestPost) ? 'hidden' : 'visible';
     }
 
-    // Event listeners para os botões
+    // Event listeners for the buttons
     prevButton.addEventListener('click', () => {
         if (currentPost > 1) {
             loadPost(currentPost - 1);
@@ -327,47 +320,53 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     
-    // Função para encontrar o post mais recente
-    async function findLatestPost(postNumber = 1) {
-        try {
-            const response = await fetch(`blog/${postNumber}.md`, { method: 'HEAD' });
-            if (response.ok) {
-                 // Continua procurando o próximo
-                await findLatestPost(postNumber + 1);
-            } else {
-                // O último que deu certo foi o anterior
+    // Function to find the latest post (corrected iterative version)
+    async function findLatestPost() {
+        let postNumber = 1;
+        while (true) {
+            try {
+                // FIX: Use a root-relative path by adding a leading slash
+                const response = await fetch(`/blog/${postNumber}.md`, { method: 'HEAD' });
+                if (!response.ok) {
+                    // If the file is not found, the previous one was the last.
+                    latestPost = postNumber - 1;
+                    break;
+                }
+                postNumber++;
+            } catch (error) {
+                // If a network error occurs (e.g., CORS in local testing), stop the search.
+                console.error("Error checking for post:", error);
                 latestPost = postNumber - 1;
+                break;
             }
-        } catch (error) {
-            // Se der erro na rede, assume que o anterior é o último
-             latestPost = postNumber - 1;
         }
     }
 
-    // Função principal para inicializar o blog
+    // Main function to initialize the blog
     async function initBlog() {
         await findLatestPost();
 
         if (latestPost === 0) {
-            postContent.innerHTML = '<p>No post files found. Create a 1.md file in the /blog/ folder.</p>';
+            postContent.innerHTML = '<p>No posts found. Create a 1.md file in the /blog/ folder.</p>';
             document.getElementById('blog-navigation').style.display = 'none';
             return;
         }
 
-        // Verifica se há um hash na URL (ex: #2)
+        // Check if there is a hash in the URL (e.g., #2)
         const postFromHash = parseInt(window.location.hash.substring(1));
 
         if (postFromHash > 0 && postFromHash <= latestPost) {
             loadPost(postFromHash);
         } else {
-            // Se não, carrega o último post
+            // If not, load the latest post
             loadPost(latestPost);
         }
     }
 
-    // Inicia o blog
+    // Start the blog
     initBlog();
 });
 </script>
 </body>
 </html>
+
