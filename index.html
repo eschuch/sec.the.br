@@ -266,13 +266,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to load a specific post
     async function loadPost(postNumber) {
-        if (postNumber < 1 || postNumber > latestPost) {
+        // Validate the post number
+        if (!postNumber || postNumber < 1 || postNumber > latestPost) {
             postContent.innerHTML = '<p>Post not found.</p>';
             return;
         }
 
+        // Avoid reloading the same post
+        if (postNumber === currentPost) return;
+
         try {
-            // FIX: Use a root-relative path by adding a leading slash
             const response = await fetch(`/blog/${postNumber}.md`);
             if (!response.ok) {
                 throw new Error('Failed to load post.');
@@ -281,7 +284,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const html = converter.makeHtml(markdown);
             postContent.innerHTML = html;
             currentPost = postNumber;
+            
+            // Update the URL hash
             window.location.hash = '#' + currentPost;
+            
             updateNavigation();
         } catch (error) {
             console.error(error);
@@ -289,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Function to update the navigation buttons
+    // Function to update the navigation buttons' state
     function updateNavigation() {
         currentPostSpan.textContent = currentPost;
         totalPostsSpan.textContent = latestPost;
@@ -298,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
         nextButton.style.visibility = (currentPost >= latestPost) ? 'hidden' : 'visible';
     }
 
-    // Event listeners for the buttons
+    // Event listeners for the navigation buttons
     prevButton.addEventListener('click', () => {
         if (currentPost > 1) {
             loadPost(currentPost - 1);
@@ -311,25 +317,36 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     
-    // Function to find the latest post (corrected iterative version)
+    // Function to find the latest available post by checking files sequentially
     async function findLatestPost() {
         let postNumber = 1;
         while (true) {
             try {
-                // FIX: Use a root-relative path by adding a leading slash
-                const response = await fetch(`/blog/${postNumber}.md`, { method: 'HEAD' });
+                // FIX: Disable cache to prevent stale results on reload
+                const response = await fetch(`/blog/${postNumber}.md`, { method: 'HEAD', cache: 'no-cache' });
                 if (!response.ok) {
-                    // If the file is not found, the previous one was the last.
+                    // When a file is not found, the previous number was the last post
                     latestPost = postNumber - 1;
                     break;
                 }
                 postNumber++;
             } catch (error) {
-                // If a network error occurs (e.g., CORS in local testing), stop the search.
                 console.error("Error checking for post:", error);
                 latestPost = postNumber - 1;
                 break;
             }
+        }
+    }
+    
+    // Function to handle routing based on the URL hash
+    function handleHashRouting() {
+        const postFromHash = parseInt(window.location.hash.substring(1));
+        
+        if (postFromHash > 0 && postFromHash <= latestPost) {
+            loadPost(postFromHash);
+        } else {
+            // If the hash is invalid or missing, load the latest post
+            loadPost(latestPost);
         }
     }
 
@@ -343,15 +360,11 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Check if there is a hash in the URL (e.g., #2)
-        const postFromHash = parseInt(window.location.hash.substring(1));
-
-        if (postFromHash > 0 && postFromHash <= latestPost) {
-            loadPost(postFromHash);
-        } else {
-            // If not, load the latest post
-            loadPost(latestPost);
-        }
+        // Handle the initial page load based on the URL
+        handleHashRouting();
+        
+        // FIX: Listen for hash changes to handle browser back/forward buttons
+        window.addEventListener('hashchange', handleHashRouting, false);
     }
 
     // Start the blog
